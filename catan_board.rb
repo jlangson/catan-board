@@ -3,14 +3,6 @@
 # Rolls that are 6's and 8's cannot be adjacent to other 6's and 8's
 # The 'desert' square has no roll on it
 
-RESOURCES = ['forest', 'forest', 'forest', 'forest', 'brick', 'brick', 'brick', 'wheat', 'wheat', 'wheat', 'wheat', 'sheep', 'sheep', 'sheep', 'sheep', 'stone', 'stone', 'stone'] # desert is left out because it isn't a resource and needs to be specially added
-
-# note - there are 19 tiles, yet 18 rolls. This is because the desert tile does not get a roll. 
-SPECIAL_ROLLS = [6, 6, 8, 8]
-PLAIN_ROLLS = [2, 3, 3, 4, 4, 5, 5, 9, 9, 10, 10, 11, 11, 12]
-TILES = (1..19).to_a
-EMPTY_BOARD = Array.new(19) {Array.new(0) {[]}}
-HARBORS = ['brick', 'generic', 'generic', 'generic', 'generic', 'sheep', 'stone', 'wheat', 'wood'] 
 
 # this function returns the adjacent tiles on the catan board. 
 # See the picture in "catan overview.odg" for details
@@ -65,43 +57,44 @@ class CatanBoard
 
     # @board and @harbors are tha arrays that represent the games
     # The other variables are used to set up the board 
-    @board = Array.new(EMPTY_BOARD) 
-    @harbors = Array.new(HARBORS)  # @harbors[0] corresponds with A, while @harbors[8] corresponds with I in the harbor diagram in "catan overview.odg"
-    @resources = Array.new(RESOURCES)
-    @special_rolls = Array.new(SPECIAL_ROLLS)
-    @plain_rolls = Array.new(PLAIN_ROLLS)
-    @tiles = Array.new(TILES)
+    @board = Array.new(19) {Array.new(0) {[]}} 
+    @harbors =  ['brick', 'generic', 'generic', 'generic', 'generic', 'sheep', 'stone', 'wheat', 'wood'] # @harbors[0] corresponds with A, while @harbors[8] corresponds with I in the harbor diagram in "catan overview.odg"
+    resources = ['forest', 'forest', 'forest', 'forest', 'brick', 'brick', 'brick', 'wheat', 'wheat', 'wheat', 'wheat', 'sheep', 'sheep', 'sheep', 'sheep', 'stone', 'stone', 'stone'] # desert is left out because it isn't a resource and needs to be specially added
+
+    # note - there are 19 tiles, yet 18 rolls. This is because the desert tile does not get a roll. 
+    special_rolls = [6, 6, 8, 8]
+    plain_rolls = [2, 3, 3, 4, 4, 5, 5, 9, 9, 10, 10, 11, 11, 12]
+    tiles = (1..19).to_a
 
     # RANDOMIZE THE HARBORS #
     @harbors = @harbors.shuffle
 
     # PLACE THE SPECIAL ROLLS #
-    temp_tiles = @tiles
-    for i in (0..@special_rolls.length-1)
+    temp_tiles = tiles
+    for i in (0..special_rolls.length-1)
       loc = temp_tiles.delete_at(rand(temp_tiles.length)) # chooses a random tile as the location and saves it
-            #temp_tiles.delete(loc) # I think this line isn't needed
       temp_tiles = temp_tiles - neighbors(loc)
     # puts the tile and the roll onto the board
       @board[i] << loc
-      @board[i] << @special_rolls.pop 
-      @tiles.delete(loc)
+      @board[i] << special_rolls.pop 
+      tiles.delete(loc)
     end
 
 
     # THEN PLACE THE REST OF THE ROLLS #
-    for i in (0..@tiles.length-1)
-      loc = @tiles.delete_at(rand(@tiles.length))
-      @board[i+4] << loc # +4 because loctions 0 through 3 are filled
-      @board[i+4] << @plain_rolls.pop
+    for i in (0..tiles.length-1)
+      loc = tiles.delete_at(rand(tiles.length))
+      @board[i+4] << loc # +4 because locations 0 through 3 are filled
+      @board[i+4] << plain_rolls.pop
     end
 
 
     # THEN PLACE THE RESOURCES #
     @board[@board.length-1] << 'desert' # matches the desert tile to the nil roll
-    for r in (0..@resources.length-1)
+    for r in (0..resources.length-1)
       # removes a random resource and pairs it with a location and a roll
       # resources must be removed randomly otherwise the 6's and 8's are all on stone and sheep
-      @board[r] << @resources.delete_at(rand(@resources.length)) 
+      @board[r] << resources.delete_at(rand(resources.length)) 
     end
 
   end
@@ -130,7 +123,7 @@ class CatanBoard
     end
 
     #TEST TOTAL ROLLS#
-    all_rolls = Array.new(SPECIAL_ROLLS + PLAIN_ROLLS)
+    all_rolls = [6, 6, 8, 8, 2, 3, 3, 4, 4, 5, 5, 9, 9, 10, 10, 11, 11, 12]
 
     # extracts the rolls from board
     temp_rolls = []
@@ -150,7 +143,7 @@ class CatanBoard
 
     #TEST RESOURCE AMOUNT#
 
-    all_resources = Array.new(RESOURCES)
+    all_resources = ['forest', 'forest', 'forest', 'forest', 'brick', 'brick', 'brick', 'wheat', 'wheat', 'wheat', 'wheat', 'sheep', 'sheep', 'sheep', 'sheep', 'stone', 'stone', 'stone']
     temp_resources = []
     # -2 because the desert square isn't a resource and it is last in the array
     for i in (0..@board.length-2) 
@@ -167,7 +160,7 @@ class CatanBoard
 
     #TEST HARBORS#
 
-    temp_harbors = Array.new(HARBORS)
+    temp_harbors =['brick', 'generic', 'generic', 'generic', 'generic', 'sheep', 'stone', 'wheat', 'wood']
     sorted_harbors = @harbors.sort
 
     if temp_harbors != sorted_harbors

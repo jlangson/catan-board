@@ -18,3 +18,7 @@ Example: [[tile_location, roll_value, resource],...,[tile_location19, roll_value
 
 The harbors are contained separately in a one-dimensional array. 
 The location of a harbor is determined by its position in the array.
+
+
+KNONW PROBLEMS:
+Creating multiple boards in irb changes the state of the previous boards
